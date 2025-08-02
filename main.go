@@ -1,19 +1,24 @@
 package main
 
 import (
-	"log"
 	"net/http"
+
+	"github.com/0xTheFr34k/go-net-http/handler/auth"
+	"github.com/0xTheFr34k/go-net-http/handler/user"
 )
 
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", home)
-	err := http.ListenAndServe(":8000", mux)
-	if err != nil {
-		log.Fatalln(err)
-	}
-}
+	mainMux := http.NewServeMux()
 
-func home(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World!\n"))
+	authMux := http.NewServeMux()
+	authMux.HandleFunc("/login", auth.Login)
+
+	userMux := http.NewServeMux()
+	userMux.HandleFunc("/user/{id}", user.GetUserByID)
+
+	authMux.Handle("/", userMux)
+
+	mainMux.Handle("/", authMux)
+
+	http.ListenAndServe(":8000", mainMux)
 }
