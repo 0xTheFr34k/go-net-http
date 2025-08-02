@@ -4,21 +4,18 @@ import (
 	"net/http"
 
 	"github.com/0xTheFr34k/go-net-http/handler/auth"
-	"github.com/0xTheFr34k/go-net-http/handler/user"
+	// "github.com/0xTheFr34k/go-net-http/handler/user"
+	"github.com/0xTheFr34k/go-net-http/middleware"
 )
 
 func main() {
-	mainMux := http.NewServeMux()
 
 	authMux := http.NewServeMux()
+
+	stack := middleware.CreateStack(
+		middleware.AuthMiddleware,
+		middleware.Logging,
+	)
 	authMux.HandleFunc("/login", auth.Login)
-
-	userMux := http.NewServeMux()
-	userMux.HandleFunc("/user/{id}", user.GetUserByID)
-
-	authMux.Handle("/", userMux)
-
-	mainMux.Handle("/", authMux)
-
-	http.ListenAndServe(":8000", mainMux)
+	http.ListenAndServe(":8000", stack(authMux))
 }
