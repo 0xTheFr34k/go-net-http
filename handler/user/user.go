@@ -2,14 +2,10 @@ package user
 
 import (
 	"encoding/json"
+	"github.com/0xTheFr34k/go-net-http/dto"
 	"net/http"
 	"strconv"
 )
-
-type Response struct {
-	Message    string `json:"message"`
-	CodeStatus int    `json:"code"`
-}
 
 func GetUserByID(w http.ResponseWriter, r *http.Request) {
 	_id := r.PathValue("id")
@@ -21,7 +17,7 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 	if err != nil || id < 0 {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(
-			Response{
+			UserDto.StatusResponse{
 				Message:    "Error",
 				CodeStatus: http.StatusBadRequest,
 			})
@@ -29,10 +25,11 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(Response{
-		Message:    "Success",
-		CodeStatus: http.StatusOK,
-	})
+	json.NewEncoder(w).Encode(
+		UserDto.StatusResponse{
+			Message:    "Success",
+			CodeStatus: http.StatusOK,
+		})
 }
 
 func Panic(w http.ResponseWriter, r *http.Request) {
