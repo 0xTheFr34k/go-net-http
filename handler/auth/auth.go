@@ -1,7 +1,9 @@
 package auth
 
-import "net/http"
+import (
+	"net/http"
+)
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Welcome to login\n"))
+	http.Redirect(w, r, "/register", http.StatusSeeOther)
 }

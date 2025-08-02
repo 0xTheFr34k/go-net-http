@@ -1,8 +1,20 @@
 package user
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+	"strconv"
+)
 
 func GetUserByID(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id")
-	w.Write([]byte("Your ID is " + id + "\n"))
+	_id := r.PathValue("id")
+
+	id, err := strconv.Atoi(_id)
+
+	if err != nil || id < 0 {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Fprintf(w, "Your ID is %s\n", _id)
 }

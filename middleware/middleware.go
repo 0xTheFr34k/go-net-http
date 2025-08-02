@@ -37,11 +37,16 @@ func AuthMiddleware(next http.Handler) http.Handler {
 func Logging(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
+
+		originalURI := r.RequestURI
+
 		wrapped := &wrappedWriter{
 			ResponseWriter: w,
 			statusCode:     http.StatusOK,
 		}
+
 		next.ServeHTTP(wrapped, r)
-		log.Println(r.Method, wrapped.statusCode, r.URL.Path, time.Since(start))
+
+		log.Println(r.Method, wrapped.statusCode, originalURI, time.Since(start))
 	})
 }
