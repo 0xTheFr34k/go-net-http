@@ -9,9 +9,11 @@ import (
 func UserRouter() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/{id}", user.GetUserByID)
+	mux.HandleFunc("/panic", user.Panic)
 
 	stack := middleware.CreateStack(
 		middleware.Logging,
+		middleware.RecoveryMiddlerware,
 	)
 
 	return stack(mux)

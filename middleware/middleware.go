@@ -3,6 +3,7 @@ package middleware
 import (
 	"log"
 	"net/http"
+	"runtime/debug"
 	"time"
 )
 
@@ -48,5 +49,18 @@ func Logging(next http.Handler) http.Handler {
 		next.ServeHTTP(wrapped, r)
 
 		log.Println(r.Method, wrapped.statusCode, originalURI, time.Since(start))
+	})
+}
+
+func RecoveryMiddlerware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if err := recover(); err != nil {
+				msg := "Caught panic: %v, Stack trace %s"
+				log.Printf(msg, err, string(debug.Stack()))
+				http.Error(w, "", http.StatusInternalServerError)
+			}
+		}()
+		next.ServeHTTP(w, r)
 	})
 }
