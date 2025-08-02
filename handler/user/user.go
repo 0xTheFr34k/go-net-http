@@ -2,6 +2,7 @@ package user
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/0xTheFr34k/go-net-http/dto"
 	"net/http"
 	"strconv"
@@ -35,4 +36,6 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 func Panic(w http.ResponseWriter, r *http.Request) {
 	var tmp *int
 	*tmp += 1
+
+	fmt.Fprintf(w, "This will Panic")
 }
