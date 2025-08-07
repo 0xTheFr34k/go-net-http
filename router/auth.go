@@ -9,6 +9,7 @@ import (
 func AuthRouter() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/login", auth.Login)
+	mux.HandleFunc("/register", auth.Register)
 
 	stack := middleware.CreateStack(
 		middleware.AuthMiddleware,

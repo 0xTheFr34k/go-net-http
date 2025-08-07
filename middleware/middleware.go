@@ -4,12 +4,23 @@ import (
 	"log"
 	"net/http"
 	"runtime/debug"
+	"sync"
 	"time"
 )
+
+var Wg sync.WaitGroup
 
 type wrappedWriter struct {
 	http.ResponseWriter
 	statusCode int
+}
+
+func WithWaitGroup(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		Wg.Add(1)
+		defer Wg.Done()
+		h.ServeHTTP(w, r)
+	})
 }
 
 func (w *wrappedWriter) WriteHeader(statusCode int) {
