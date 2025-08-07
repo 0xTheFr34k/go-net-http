@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/0xTheFr34k/go-net-http/middleware"
 	"github.com/0xTheFr34k/go-net-http/router"
@@ -32,7 +33,20 @@ func main() {
 
 	<-shutdown.Done()
 
-	middleware.Wg.Wait()
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
 
-	server.Shutdown(shutdown)
+	done := make(chan struct{})
+
+	go func() {
+		middleware.Wg.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+	case <-ctx.Done():
+	}
+
+	server.Shutdown(context.Background())
 }
